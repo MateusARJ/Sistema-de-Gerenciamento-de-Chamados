@@ -19,13 +19,17 @@ export class TextCallUI implements ICallUI{
 
     /**
      * Inicia o loop de interação com o usuário via prompt.
-     * Opções: 1) Cadastrar, 2) Listar, 3) Marcar como concluído, 0) Sair.
-     * Observação: As opções de listagem e marcação podem ser expandidas pelos alunos.
      */
     start(): void {
         let op = 1;
         while(op!=0){
-            op = Number(prompt('Escolha uma opção/n1- Cadastrar/n2- Listar/n3- Marcar como concluido/n0- Sair'));
+            op = Number(prompt(
+                'Escolha uma opção\n' +
+                '1- Cadastrar\n' +
+                '2- Listar\n' +
+                '3- Marcar como concluido\n' +
+                '0- Sair'
+            ));
             switch(op){
                 case 1:
                     let nome : string = prompt('Digite seu nome')!;
@@ -37,14 +41,46 @@ export class TextCallUI implements ICallUI{
                         alert('Não foi possível cadastrar o chamado');
                     }
                     break;
+
                 case 2:
+                    let chamados = this.callController.listarChamado();
+
+                    if(chamados.length === 0){
+                        alert('Nenhum chamado cadastrado');
+                        break;
+                    }else{
+                        let texto = '';
+                        for(let i=0; i<chamados.length; i++){
+                            texto += i + ' - ' + chamados[i].solicitante + ' | ' + chamados[i].descricao + '\n';
+                        }
+                        alert(texto);
+                    }
                     break;
+
                 case 3:
+                    const listaChamados = this.callController.listarChamado();
+
+                    if (listaChamados.length === 0) {
+                        alert("Não há chamados para atender.");
+                        break;
+                    }
+
+                    let indice = Number(prompt("Digite o índice do chamado a ser concluído:"));
+
+                    if (isNaN(indice) || indice < 0 || indice >= listaChamados.length) {
+                        alert("Índice inválido.");
+                        break;
+                    }
+
+                    let sucesso = this.callController.marcarComoAtendido(listaChamados[indice]);
+                    alert(sucesso ? "Chamado marcado como atendido." : "Erro ao atualizar chamado.");
                     break;
+
                 case 0:
+                    alert('Obrigado por usar nosso sistema');
                     break;
                 default:
-                    alert('Opcao Inválida');
+                    alert('Opção Inválida, digite uma opção válida por favor!');
             }
         }
     }
